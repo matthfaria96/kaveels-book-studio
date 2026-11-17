@@ -241,7 +241,13 @@ export function tr(s: string): string {
   if (D[k]) return s.replace(k, D[k]);
   const bullet = k.match(/^([●•✓·]\s*)(.+)$/);
   if (bullet) { const inner = tr(bullet[2]); if (inner !== bullet[2]) return s.replace(k, bullet[1] + inner.trim()); }
-  for (const [re, out] of RULES) if (re.test(k)) return s.replace(k, k.replace(re, out));
+  for (const [re, out] of RULES) if (re.test(k)) { const t = k.replace(re, out); if (t !== k) return s.replace(k, t); }
+  // pontuação nas pontas ("Baixar um modelo —", "Escrever capítulo atual?")
+  const edge = k.match(/^([\s—–·:?!.…(]*)(.*?)([\s—–·:?!.…)]*)$/);
+  if (edge && (edge[1] || edge[3]) && edge[2]) { const inner = tr(edge[2]); if (inner !== edge[2]) return s.replace(k, edge[1] + inner + edge[3]); }
+  // partes separadas por — · |
+  const parts = k.split(/(\s[—·|]\s)/);
+  if (parts.length > 1) { const t = parts.map((x, i) => (i % 2 ? x : tr(x))).join(""); if (t !== k) return s.replace(k, t); }
   return s;
 }
 

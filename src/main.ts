@@ -21,7 +21,7 @@ interface Act { id: string; icon: string; title: string; detail: string; state: 
 interface Cast { id: string; name: string; role: string; age: string; appearance: string; personality: string; arc: string; links: string; gender?: string; height?: string; build?: string; occupation?: string; mbti?: string; mbtiWhy?: string; goal?: string; fear?: string; speech?: string }
 interface World { id: string; kind: string; name: string; desc: string; details: string; links: string }
 interface BookStyle { base: "author" | "refs" | "both"; books: string[] | null; refs: string[] | null; genres: string; tone: string; pov: string; tense: string; audience: string; comps: string; notes: string; coverStyle: string; coverRef: "author" | "free" }
-interface Project { coverPrompt?: string; style?: BookStyle; outlineAI?: number; arch?: Record<string, string>; world?: World[]; wrap?: WrapDesign; wrapArt?: string; wrapFinal?: string; coverFull?: string; textsAI?: boolean; backArt?: string; coverV?: number; arts?: { path: string; kind: string; at: number; prompt?: string }[]; status?: "approved" | "rejected"; trashed?: number; ebookCover?: string; cast?: Cast[]; id: string; title: string; subtitle: string; premise: string; genre: string; names: string; nChapters: number; pages?: number; chapters: Chapter[]; chat: Msg[]; cover?: string; kdp: { description: string; keywords: string[]; categories: string[]; series: string; price: string; lang: string }; updated: number }
+interface Project { bookLang?: string; coverPrompt?: string; style?: BookStyle; outlineAI?: number; arch?: Record<string, string>; world?: World[]; wrap?: WrapDesign; wrapArt?: string; wrapFinal?: string; coverFull?: string; textsAI?: boolean; backArt?: string; coverV?: number; arts?: { path: string; kind: string; at: number; prompt?: string }[]; status?: "approved" | "rejected"; trashed?: number; ebookCover?: string; cast?: Cast[]; id: string; title: string; subtitle: string; premise: string; genre: string; names: string; nChapters: number; pages?: number; chapters: Chapter[]; chat: Msg[]; cover?: string; kdp: { description: string; keywords: string[]; categories: string[]; series: string; price: string; lang: string }; updated: number }
 
 const S = {
   lib: [] as Item[], author: {} as any, profile: null as Profile | null, projects: [] as Project[],
@@ -448,6 +448,7 @@ function ideaAcc(p: Project, mismatch: any, offlinePlan: boolean) {
   return `<div class="castwrap"><div class="acc">
     ${accSec("cover", "image", tr("Capa"), p.cover ? tr("pronta") + (p.wrapArt ? " · " + tr("arte da capa completa pronta") : "") : tr("sem capa ainda"), coverB)}
     ${accSec("idea", "feather", tr("História"), esc([p.genre, p.premise.replace(/\s+/g, " ").slice(0, 110)].filter(Boolean).join(" · ") || "—"), story)}
+    ${accSec("lang", "globe", L("Idioma do livro", "Book language"), p.bookLang ? bookLangName(p.bookLang) : L("Não definido — escolha para a IA escrever na variante certa", "Not set — pick one so the AI writes in the right variant"), `<p class="muted" style="margin:0 0 10px">${L("A IA escreve o livro, a sinopse e os textos da capa neste idioma, com a ortografia e o vocabulário do país.", "The AI writes the book, the blurb and the cover texts in this language, with that country's spelling and vocabulary.")}</p>${langPicker(p.bookLang || "", "book-lang")}`)}
     ${accSec("style", "fingerprint", tr("Estilo e referências"), esc([tr(BASES.find((b) => b[0] === st.base)![1]), st.genres || p.genre, st.tone].filter(Boolean).join(" · ")), styleB)}
     ${accSec("size", "book", tr("Tamanho do livro"), `${p.pages || 180} ${tr("páginas")} · ${p.nChapters} ${tr("capítulos")} · ≈ ${totalWords(p).toLocaleString(locale())} ${tr("palavras")}`, size)}
     ${accSec("arch", "compass", tr("Arquitetura narrativa"), tr("baseada nas pesquisas StoryScope e sepia: o que separa ficção humana de ficção de IA"), archB)}
@@ -822,7 +823,7 @@ function kdpSheet(p: Project, pages: number) {
   const k = p.kdp, d = wrapOf(p), m = kdpDims(d.trim, pages, d.paper), au = S.author.pen || S.author.name || "";
   const ai = S.settings.mode !== "offline";
   return [`KDP — ${p.title}`, "=".repeat(40), "",
-    "1) DETAILS (Kindle eBook and Paperback)", `Language: ${({ en: "English", pt: "Portuguese", es: "Spanish" } as any)[k.lang] || k.lang}`, `Book title: ${p.title}`, `Subtitle: ${p.subtitle || "-"}`, `Series: ${k.series || "-"}`, `Author: ${au}`, "",
+    "1) DETAILS (Kindle eBook and Paperback)", `Language: ${({ en: "English", pt: "Portuguese", es: "Spanish", ru: "Russian" } as any)[k.lang] || k.lang}`, `Book title: ${p.title}`, `Subtitle: ${p.subtitle || "-"}`, `Series: ${k.series || "-"}`, `Author: ${au}`, "",
     "Description:", k.description.trim(), "",
     "Publishing rights: I own the copyright and I hold the necessary publishing rights.",
     "Keywords (7 boxes):", ...(k.keywords.filter(Boolean).length ? k.keywords.filter(Boolean).map((x, i) => `  ${i + 1}. ${x}`) : ["  (empty — use “Fill” on the app's KDP screen)"]), "",
@@ -841,7 +842,7 @@ function kdpPanel(p: Project) {
   const row = (label: string, val: string, ok = true) => `<div class="krow"><span>${label}</span><div>${ok ? val : miss}</div></div>`;
   const chips = (l: string[]) => l.filter(Boolean).map((x) => `<span class="kchip">${esc(x)}</span>`).join("");
   const kws = k.keywords.filter(Boolean), cats = k.categories.filter(Boolean);
-  const langs: [string, string][] = [["en", L("Inglês", "English")], ["pt", L("Português", "Portuguese")], ["es", L("Espanhol", "Spanish")]];
+  const langs: [string, string][] = [["en", L("Inglês", "English")], ["pt", L("Português", "Portuguese")], ["es", L("Espanhol", "Spanish")], ["ru", L("Russo", "Russian")]];
   const sizes = Object.keys(TRIMS).map((t) => [t, t.replace("x", " × ") + '"']);
   const pages = d.pages, spine = kdpDims(d.trim, pages, d.paper).spine;
   const missing = [!p.title, !author, !k.description.trim(), kws.length < 7, !cats.length, !k.price].filter(Boolean).length;
@@ -901,7 +902,7 @@ function pubBar(p: Project, on: boolean) {
 }
 
 type KdpDraft = { title: string; subtitle: string; author: string; series: string; lang: string; price: string; trim: string; paper: string; description: string; keywords: string[]; categories: string[] };
-function kdpDraft(p: Project): KdpDraft { const d = wrapOf(p); return { title: p.title, subtitle: p.subtitle, author: S.author.pen || S.author.name || "", series: p.kdp.series, lang: p.kdp.lang, price: p.kdp.price, trim: d.trim, paper: d.paper, description: p.kdp.description, keywords: [...p.kdp.keywords], categories: [...p.kdp.categories] }; }
+function kdpDraft(p: Project): KdpDraft { const d = wrapOf(p); return { title: p.title, subtitle: p.subtitle, author: S.author.pen || S.author.name || "", series: p.kdp.series, lang: p.bookLang || p.kdp.lang, price: p.kdp.price, trim: d.trim, paper: d.paper, description: p.kdp.description, keywords: [...p.kdp.keywords], categories: [...p.kdp.categories] }; }
 
 // ---------- Configurações ----------
 const ACCENTS = ["#c8963e", "#d0574a", "#c2417a", "#8a5cf0", "#3f7fe0", "#2aa59a", "#5f9e3f", "#9a8f84"];
@@ -1435,11 +1436,31 @@ const TENSES: [string, string, string][] = [["", "Igual aos livros do autor", ""
 const AUDS: [string, string, string][] = [["", "Igual aos livros do autor", ""], ["adult", "Adulto", "adult readers"], ["na", "Jovem adulto (New Adult)", "new adult readers (18-25)"], ["ya", "Juvenil (YA)", "young adult readers, no explicit content"]];
 const BASES: [BookStyle["base"], string, string][] = [["author", "Só os livros do autor", "voz, ritmo e temas do autor"], ["both", "Autor + obras de referência", "voz do autor, referências para atmosfera e estrutura"], ["refs", "Só as obras de referência", "imita o estilo das referências escolhidas"]];
 /** Bloco curto com as decisões deste livro (vai em todo pedido). */
+// idioma em que o livro é escrito (variante regional)
+const BOOK_LANGS: [string, string, string, string, string][] = [
+  ["en-US", "🇺🇸", "Inglês · Estados Unidos", "English · United States", "American English (US spelling and vocabulary)"],
+  ["en-GB", "🇬🇧", "Inglês · Reino Unido", "English · United Kingdom", "British English (UK spelling and vocabulary)"],
+  ["en-ZA", "🇿🇦", "Inglês · África do Sul", "English · South Africa", "South African English (British spelling, with South African vocabulary and expressions where natural)"],
+  ["en-AU", "🇦🇺", "Inglês · Austrália", "English · Australia", "Australian English (Australian spelling and vocabulary)"],
+  ["en-CA", "🇨🇦", "Inglês · Canadá", "English · Canada", "Canadian English (Canadian spelling and vocabulary)"],
+  ["en-IE", "🇮🇪", "Inglês · Irlanda", "English · Ireland", "Irish English (British spelling, Irish vocabulary)"],
+  ["en-NZ", "🇳🇿", "Inglês · Nova Zelândia", "English · New Zealand", "New Zealand English (NZ spelling and vocabulary)"],
+  ["en-IN", "🇮🇳", "Inglês · Índia", "English · India", "Indian English (British spelling, Indian English vocabulary)"],
+  ["pt-BR", "🇧🇷", "Português · Brasil", "Portuguese · Brazil", "Brazilian Portuguese"],
+  ["ru-RU", "🇷🇺", "Russo · Rússia", "Russian · Russia", "Russian"],
+];
+const bookLangOf = (code?: string) => BOOK_LANGS.find((x) => x[0] === code);
+const bookLangName = (code?: string) => { const b = bookLangOf(code); return b ? `${b[1]} ${L(b[2], b[3])}` : ""; };
+const bookLangPrompt = (p?: Project | null) => bookLangOf(p?.bookLang)?.[4] || "English";
+function langPicker(cur: string, act: string) {
+  return `<div class="langgrid">${BOOK_LANGS.map(([c, f, pt, en]) => { const [lng, ctry] = L(pt, en).split(" · "); return `<button class="langopt ${cur === c ? "on" : ""}" data-act="${act}" data-v="${c}"><span class="lflag">${f}</span><span class="ltx"><b>${lng}</b><small>${ctry}</small></span></button>`; }).join("")}</div>`;
+}
 function bookBrief(p?: Project | null) {
   if (!p) return "";
   const st = styleOf(p), en = (l: [string, string, string][], v: string) => l.find((x) => x[0] === v)?.[2] || "";
   const { books, refs } = styleSources(st);
   const lines = [
+    p.bookLang && `Language: write all the book text (prose, dialogue, titles, blurbs) in ${bookLangPrompt(p)}.`,
     st.base === "refs" ? `Voice: imitate the reference works (${refs.map((r) => r.title).join(", ") || "none selected"}), not any other author.` : st.base === "both" ? `Voice: the author's own voice (books: ${books.map((b) => b.title).join(", ")}); use the reference works (${refs.map((r) => r.title).join(", ")}) only for atmosphere, structure and genre conventions — never their voice.` : books.length ? `Voice: the author's own books only (${books.map((b) => b.title).join(", ")}).` : "",
     (st.genres || p.genre) && `Genres: ${st.genres || p.genre}.`, st.tone && `Tone/mood: ${st.tone}.`, en(POVS, st.pov) && `Point of view: ${en(POVS, st.pov)}.`, en(TENSES, st.tense) && `Tense: ${en(TENSES, st.tense)}.`,
     en(AUDS, st.audience) && `Audience: ${en(AUDS, st.audience)}.`, st.comps && `Comparable to: ${st.comps} (feel and market, never copy).`, st.notes && `Style notes from the author: ${st.notes}`,
@@ -1890,6 +1911,7 @@ function vNovo() {
   <label class="fld"><span>Nome do livro</span><input class="big-in" data-draft="title" value="${esc(d.title || "")}" placeholder="Ex.: Silent Vows"></label>
   <label class="fld"><span>Suas ideias</span><textarea class="big-in" rows="7" data-draft="ideas" placeholder="Do que é a história? Quem são os personagens? Onde se passa? Que reviravolta você imagina? Pode escrever do jeito que vier.">${esc(d.ideas || "")}</textarea></label>
   <label class="fld"><span>Personagens principais (opcional)</span><input data-draft="names" value="${esc(d.names || "")}" placeholder="Ex.: Riya, Kabir, Meera"></label>
+  <div class="fld"><span>${L("Idioma do livro", "Book language")}</span>${langPicker(d.bookLang || "en-US", "draft-lang")}</div>
   <div class="fld"><span>Base de conhecimento</span><div class="toggles">
     <button class="tog on" disabled>${ic("library")} Meus livros <small>estilo, ritmo e personagens</small></button>
     <button class="tog ${S.settings.useRefs ? "on" : ""}" data-act="toggle-refs">${ic("landmark")} Obras de referência <small>${refs ? `${refs} obras liberadas` : "nenhuma ainda — adicione em Referências"}</small></button></div></div>
@@ -1985,7 +2007,7 @@ function wrapStudio() {
 }
 /** Textos da capa (selo, chamada, sinopse, bio) escritos pela IA. */
 async function coverTextsAI(p: Project, act?: Act) {
-  const out = await gen("Capa", `Write the paperback cover texts for the novel "${p.title}" by ${S.author.pen || S.author.name}.\nPremise: ${p.premise.slice(0, 1800)}\n${castText(p).slice(0, 1500)}\nAuthor bio: ${(S.author.bio || "").slice(0, 600)}\n\nOutput exactly these labelled sections in English, nothing else:\nSERIES: a short genre label for the top of the front cover, in the style of the author's previous covers (e.g. "A PSYCHOLOGICAL THRILLER")\nTAGLINE: one gripping line for the top of the back cover (max 14 words)\nBACK: the back-cover blurb, 130-170 words, 2-3 short paragraphs, ending on a hook. No spoilers of the ending.\nBIO: a 30-40 word third-person author bio`, p.premise, 900, undefined, act);
+  const out = await gen("Capa", `Write the paperback cover texts for the novel "${p.title}" by ${S.author.pen || S.author.name}.\nPremise: ${p.premise.slice(0, 1800)}\n${castText(p).slice(0, 1500)}\nAuthor bio: ${(S.author.bio || "").slice(0, 600)}\n\nOutput exactly these labelled sections (labels in English, texts in ${bookLangPrompt(p)}), nothing else:\nSERIES: a short genre label for the top of the front cover, in the style of the author's previous covers (e.g. "A PSYCHOLOGICAL THRILLER")\nTAGLINE: one gripping line for the top of the back cover (max 14 words)\nBACK: the back-cover blurb, 130-170 words, 2-3 short paragraphs, ending on a hook. No spoilers of the ending.\nBIO: a 30-40 word third-person author bio`, p.premise, 900, undefined, act);
   const sec = (k: string) => out.split(new RegExp(`\\**${k}\\**\\s*:`, "i"))[1]?.split(/\n\s*\**(SERIES|TAGLINE|BACK|BIO)\**\s*:/i)[0]?.trim().replace(/^["“]|["”]$/g, "") || "";
   const d = wrapOf(p);
   d.series = sec("SERIES") || d.series; d.tagline = sec("TAGLINE") || d.tagline; d.back = sec("BACK") || d.back; d.bio = sec("BIO") || d.bio;
@@ -2120,13 +2142,15 @@ const ACT: Record<string, (el: HTMLElement) => any> = {
   "toggle-refs": () => { S.settings.useRefs = !S.settings.useRefs; save_("settings", S.settings); render(); },
   "draft-cover": (el) => { const v = el.dataset.v || ""; if (v && !S.keys?.[v]) { toast("Salve a chave dessa IA em Configurações primeiro", true); } S.settings.draft = { ...(S.settings.draft || {}), coverAI: v }; save_("settings", S.settings); render(); },
   "claude-model": (el) => { S.settings.models.claude = el.dataset.v || ""; save_("settings", S.settings); render(); },
+  "draft-lang": (el) => { S.settings.draft = { ...(S.settings.draft || {}), bookLang: el.dataset.v }; save_("settings", S.settings); render(); },
+  "book-lang": (el) => { const p = proj(); if (!p) return; p.bookLang = el.dataset.v; p.kdp.lang = el.dataset.v!.split("-")[0]; saveProjects(); render(); },
   "draft-size": (el) => { S.settings.draft = { ...(S.settings.draft || {}), pages: el.dataset.n }; save_("settings", S.settings); render(); },
   "import-ref": async () => { const r = await open({ multiple: true, filters: [{ name: "Obras", extensions: ["txt", "pdf", "docx", "md"] }] }); if (r) await importPaths(Array.isArray(r) ? r : [r], undefined, "referencia"); },
   "create-book": async () => {
     const d = S.settings.draft || {};
     if (!d.title?.trim() && !d.ideas?.trim()) return toast("Dê um nome ou escreva suas ideias", true);
     const p = newProject();
-    p.title = d.title?.trim() || "Sem título"; p.premise = d.ideas || ""; p.names = d.names || ""; p.pages = +(d.pages || 180); p.nChapters = chaptersFor(p.pages);
+    p.title = d.title?.trim() || "Sem título"; p.premise = d.ideas || ""; p.names = d.names || ""; p.pages = +(d.pages || 180); p.nChapters = chaptersFor(p.pages); const bl: string = d.bookLang || "en-US"; p.bookLang = bl; p.kdp.lang = bl.split("-")[0];
     p.style = { ...styleOf(null), genres: "", base: authorBooks().length ? (S.settings.useRefs && refWorks().length ? "both" : "author") : "refs" };
     S.projects.unshift(p); S.projId = p.id; S.chap = 0; saveProjects();
     S.view = "estudio"; render();
@@ -2533,7 +2557,7 @@ const ACT: Record<string, (el: HTMLElement) => any> = {
         if (p.ebookCover) await invoke("copy_file", { src: p.ebookCover, dest: `${base} - kindle cover.jpg` });
       }
       await step(L("ebook: EPUB…", "ebook: EPUB…"));
-      await invoke("export_epub", { out: `${base} - kindle.epub`, book: { title: p.title, author: S.author.pen || S.author.name || "", lang: p.kdp.lang, description: p.kdp.description, publisher: S.author.pen || S.author.name, cover: p.ebookCover || p.cover || null, front: p.subtitle ? `<p style="text-align:center">${esc(p.subtitle)}</p>` : "", chapters: p.chapters.filter((c) => strip(c.html).trim()).map((c) => ({ title: c.title, html: cleanCh(c.html) })) } });
+      await invoke("export_epub", { out: `${base} - kindle.epub`, book: { title: p.title, author: S.author.pen || S.author.name || "", lang: p.bookLang || p.kdp.lang, description: p.kdp.description, publisher: S.author.pen || S.author.name, cover: p.ebookCover || p.cover || null, front: p.subtitle ? `<p style="text-align:center">${esc(p.subtitle)}</p>` : "", chapters: p.chapters.filter((c) => strip(c.html).trim()).map((c) => ({ title: c.title, html: cleanCh(c.html) })) } });
       await step(L("ficha com os dados para copiar…", "details sheet to copy from…"));
       await invoke("write_text_file", { path: `${base} - KDP details.txt`, text: kdpSheet(p, pdf.pages) });
       actEnd(a, L(`pronto: 5 arquivos · ${pdf.pages} páginas`, `ready: 5 files · ${pdf.pages} pages`)); toast(L("Pacote da KDP pronto", "KDP package ready")); invoke("reveal", { path: `${base} - KDP details.txt` }); render();
@@ -2561,7 +2585,7 @@ const ACT: Record<string, (el: HTMLElement) => any> = {
     if (!out) return;
     const clean = (h: string) => h.replace(/<p><em>\[(Plano|Inspira|Scene plan|Inspiration)[\s\S]*?<\/p>/g, "");
     try {
-      await invoke("export_epub", { out, book: { title: p.title, author: S.author.pen || S.author.name || "", lang: p.kdp.lang, description: strip(p.kdp.description), publisher: S.author.pen || S.author.name, cover: p.ebookCover || p.cover || null, front: p.subtitle ? `<p style="text-align:center">${esc(p.subtitle)}</p>` : "", chapters: p.chapters.map((c) => ({ title: c.title, html: clean(c.html) })) } });
+      await invoke("export_epub", { out, book: { title: p.title, author: S.author.pen || S.author.name || "", lang: p.bookLang || p.kdp.lang, description: strip(p.kdp.description), publisher: S.author.pen || S.author.name, cover: p.ebookCover || p.cover || null, front: p.subtitle ? `<p style="text-align:center">${esc(p.subtitle)}</p>` : "", chapters: p.chapters.map((c) => ({ title: c.title, html: clean(c.html) })) } });
       toast("EPUB exportado — pronto para subir na KDP"); invoke("reveal", { path: out });
     } catch (e: any) { toast(String(e), true); }
   },

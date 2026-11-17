@@ -875,3 +875,11 @@ main.v-config .top p{margin-top:4px}
 .rbook .bcov{width:100%;border-radius:4px 8px 8px 4px;box-shadow:0 8px 20px var(--shadow);transition:transform .2s}
 .rbook:hover .bcov{transform:translateY(-4px)}
 .rbook b{font-size:13px;line-height:1.25}.rbook small{color:var(--mut);font-size:11px}
+
+/* idioma do livro */
+.langgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.langopt{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--tx);text-align:left;cursor:pointer}
+.langopt:hover{border-color:color-mix(in srgb,var(--acc) 45%,var(--line))}
+.langopt.on{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 9%,var(--panel));box-shadow:0 0 0 1px var(--acc)}
+.langopt .lflag{font-size:22px;line-height:1}
+.langopt .ltx{display:flex;flex-direction:column;min-width:0}.langopt b{font-size:13px;font-weight:600}.langopt small{font-size:11.5px;color:var(--mut)}
