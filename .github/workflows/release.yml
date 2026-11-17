@@ -1,0 +1,35 @@
+name: release
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            args: --bundles dmg
+          - os: windows-latest
+            args: --bundles nsis
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: dtolnay/rust-toolchain@stable
+      - run: npm ci
+      - run: npx tauri build ${{ matrix.args }}
+      - name: Rename (mac)
+        if: runner.os == 'macOS'
+        run: cp src-tauri/target/release/bundle/dmg/*.dmg KaveelsBookStudio-mac.dmg
+      - name: Rename (windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: cp src-tauri/target/release/bundle/nsis/*.exe KaveelsBookStudio-windows-setup.exe
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: KaveelsBookStudio-*
