@@ -16,6 +16,8 @@ jobs:
           - os: windows-latest
             args: --bundles nsis
     runs-on: ${{ matrix.os }}
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "11.0"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
