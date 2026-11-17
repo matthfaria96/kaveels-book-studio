@@ -244,7 +244,7 @@ details.plan textarea{width:100%;background:#0002;font-size:13px;margin-top:2px}
 .editbar{position:sticky;bottom:0;display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:10px 0 0;margin-top:8px;border-top:1px solid var(--line);background:var(--panel)}.editbar .muted{flex:1;font-size:12px}
 /* abas no padrão acordeão: ideia, capítulos; capa; assistente recolhível */
 .prose2.one{grid-template-columns:1fr}.facts.big dd{font:600 20px Georgia,serif;color:var(--acc2)}
-.avatar.num{background:color-mix(in srgb,var(--hi) 7.1%,transparent);color:var(--tx);font-size:14px}.avatar.st-ok{background:color-mix(in srgb,var(--ok) 55%,#000)}.avatar.st-part{background:#8a6420}.avatar.st-live{background:var(--acc)}
+.avatar.num{background:color-mix(in srgb,var(--hi) 7.1%,transparent);color:var(--tx);font-size:14px}.avatar.st-ok{background:var(--ok2);color:#fff}.avatar.st-part{background:#8a6420;color:#fff}.avatar.st-live{background:var(--acc);color:var(--onacc)}
 .chip.st-ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}.chip.st-part{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 33.3%,transparent)}.chip.st-live{color:var(--acc);border-color:var(--acc)}
 .chips .cbar{width:70px}.accitem.live{border-color:var(--acc)}
 .accbody .chtext{margin-top:12px;font:15px/1.6 Georgia,serif;color:#d8cfc4;background:#00000026;border-radius:10px;padding:12px 14px;cursor:pointer;white-space:pre-wrap;max-height:220px;overflow:hidden}
