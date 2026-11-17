@@ -1,12 +1,17 @@
 # Kaveel's Book Studio
 
-A desktop app (macOS + Windows, built with Tauri 2 + Rust + TypeScript) for writing horror books in the style of author Kaveel Lilmohun and publishing them on Amazon KDP.
+A free writing studio for any writer (macOS + Windows, built with Tauri 2 + Rust + TypeScript). Start a book from scratch with just an idea, or bring in the books you have already written and keep going in your own style. When it is done, publish it on Amazon KDP.
+
+It was first made for author Kaveel Lilmohun, and now works for any writer and genre.
+
+![Library](docs/library.jpg)
+![Studio](docs/studio.jpg)
 
 ## Features
 - **Library**: every book with its cover, status and quick actions.
 - **Studio**: an editor with chapters, characters, an idea board, a story map and analysis. A switch flips between **Edit mode** and **Amazon (KDP) mode**.
 - **AI writing (optional)**: Claude (through your logged-in Claude Code), ChatGPT or Gemini. The chat always works on the book that is open.
-- **Style**: an analysis of the author's voice, vocabulary, characters and structure, plus a checker for new text.
+- **Style**: an analysis of your voice, vocabulary, characters and structure, plus a checker for new text.
 - **KDP export**: EPUB, full-wrap cover (PNG/PDF/layered PSD) and all the listing metadata.
 - **Reader**, references, a light/dark/custom theme and an English/Portuguese UI.
 
