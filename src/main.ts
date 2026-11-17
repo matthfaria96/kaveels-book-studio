@@ -511,8 +511,8 @@ function vEstudio() {
   const mismatch = p.chapters.length && p.chapters.length !== p.nChapters;
   const offlinePlan = p.chapters.length > 0 && p.chapters.every((c) => !c.plan || /^(Ordinary world|Mundo normal|Bonds|Laços|The crack)/.test(c.plan));
   const main = S.writing
-    ? `<button class="btn big" data-act="stop-gen">${ic("stop")} Parar</button>`
-    : started && done >= p.chapters.length ? "" : `<button class="btn primary big" data-act="gen-book">${ic("sparkles")} ${started ? "Continuar escrevendo" : "Gerar livro completo"}</button>`;
+    ? `<button class="btn readbtn" data-act="stop-gen" title="${L("Parar", "Stop")}">${ic("stop", 15)} <span>${L("Parar", "Stop")}</span></button>`
+    : started && done >= p.chapters.length ? "" : `<button class="btn primary readbtn" data-act="gen-book" title="${started ? L("Continuar escrevendo", "Continue writing") : L("Gerar livro completo", "Generate full book")}">${ic("sparkles", 15)} <span>${started ? L("Continuar", "Continue") : L("Gerar livro", "Generate book")}</span></button>`;
   const ideaTab = ideaAcc(p, mismatch, offlinePlan);
   const stages = [["cast", L("Personagens", "Characters"), "fingerprint"], ["world", L("Lugares e objetos", "Places & objects"), "landmark"], ["outline", L("Roteiro", "Outline"), "compass"], ["cover", L("Capa", "Cover"), "image"], ["write", L("Capítulos", "Chapters"), "write"]];
   const si = stages.findIndex((x) => x[0] === S.pipe);

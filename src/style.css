@@ -759,7 +759,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 0
 .stmenu .mpanel{min-width:300px}
 .sti{flex:none;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--btn);color:var(--mut)}.sti.ok{color:var(--okt);background:color-mix(in srgb,var(--ok2) 14%,transparent)}.sti.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
 .tabrow{padding:0 22px 10px 0;border-bottom:1px solid var(--line)}
-@container (max-width:620px){.phead3 .readbtn span{display:none}}
+.phead3 .ptitle{min-width:200px}.phead3 .pacts{flex:none}.phead3 .pmeta{flex-wrap:nowrap;white-space:nowrap;overflow:hidden}
+@container (max-width:760px){.phead3 .readbtn span{display:none}.phead3 .readbtn{padding:8px 10px}}
 .pmeta>.pring+span::before{content:none!important}
 /* Janela "Quem vai escrever" legível no claro */
 .does{color:var(--tx2)}
